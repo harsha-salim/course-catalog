@@ -26,6 +26,7 @@ dependencies {
 	runtimeOnly("com.h2database:h2")
 //	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
 }
 
 tasks.withType<KotlinCompile> {
