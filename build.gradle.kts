@@ -23,10 +23,13 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
 	runtimeOnly("com.h2database:h2")
 //	runtimeOnly("org.postgresql:postgresql")
+	implementation("com.ninja-squad:springmockk:3.1.2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
+	testImplementation("org.springframework.boot:spring-boot-starter-webflux")
+	testImplementation("io.mockk:mockk:1.13.2")
 }
 
 tasks.withType<KotlinCompile> {
@@ -38,4 +41,12 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+sourceSets {
+	test {
+		java {
+			setSrcDirs(listOf("src/test/intg","src/test/unit"))
+		}
+	}
 }
