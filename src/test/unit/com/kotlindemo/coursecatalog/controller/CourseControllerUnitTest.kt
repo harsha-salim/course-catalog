@@ -21,6 +21,25 @@ class CourseControllerUnitTest {
     lateinit var courseService: CourseService
 
     @Test
+    fun retrieveAll(){
+        var expectedCourseDTOList = mutableListOf<CourseDTO>(
+            CourseDTO(1,"Plants","Science"),
+            CourseDTO(2,"Numbers","Maths"),
+        )
+        every { courseService.retrieveAll() } returns expectedCourseDTOList
+
+        var actualCourseDTOList = webTestClient
+            .get()
+            .uri("/v1/courses")
+            .exchange()
+            .expectStatus().is2xxSuccessful
+            .expectBodyList(CourseDTO::class.java)
+            .returnResult()
+            .responseBody
+
+        Assertions.assertEquals(expectedCourseDTOList,actualCourseDTOList)
+    }
+    @Test
     fun add(){
         var requestJson = "{\n \"name\":\"Plants\",\n \"category\":\"Science\"\n}"
         var expectedCourseDTO = CourseDTO(1,"Plants","Science")
@@ -39,4 +58,5 @@ class CourseControllerUnitTest {
 
         Assertions.assertEquals(expectedCourseDTO,response.responseBody)
     }
+
 }

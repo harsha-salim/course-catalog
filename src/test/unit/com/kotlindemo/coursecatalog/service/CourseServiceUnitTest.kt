@@ -30,7 +30,7 @@ class CourseServiceUnitTest {
     }
 
     @Test
-    fun addCourse(){
+    fun add(){
         val courseDTO = CourseDTO(null,"plants","science")
         val expectedCourseDTO = CourseDTO(null,"plants","science")
 
@@ -39,5 +39,24 @@ class CourseServiceUnitTest {
         val actualCourseDTO = courseService.add(courseDTO)
 
         Assertions.assertTrue(expectedCourseDTO==actualCourseDTO)
+    }
+
+    @Test
+    fun retrieveAll(){
+
+        var coursesList = mutableListOf<Course>(
+            Course(1,"Plants","Science"),
+            Course(2,"Numbers","Maths"),
+        )
+        every { courseRepositoryMock.findAll() } returns coursesList
+
+        var expectedCourseDTOList = mutableListOf<CourseDTO>(
+            CourseDTO(1,"Plants","Science"),
+            CourseDTO(2,"Numbers","Maths"),
+        )
+
+        val actualCourseDTOList = courseService.retrieveAll()
+
+        Assertions.assertTrue(actualCourseDTOList.containsAll(expectedCourseDTOList))
     }
 }

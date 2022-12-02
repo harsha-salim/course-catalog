@@ -9,6 +9,11 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/v1/courses")
 class CourseController(val courseService: CourseService) {
 
+    @GetMapping
+    fun retrieveAll(): List<CourseDTO> {
+        return courseService.retrieveAll()
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun add(@RequestBody courseDTO: CourseDTO): CourseDTO {

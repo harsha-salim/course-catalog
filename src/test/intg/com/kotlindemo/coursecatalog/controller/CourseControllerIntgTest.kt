@@ -1,7 +1,10 @@
 package com.kotlindemo.coursecatalog.controller
 
 import com.kotlindemo.coursecatalog.dto.CourseDTO
+import com.kotlindemo.coursecatalog.entity.Course
+import com.kotlindemo.coursecatalog.repository.CourseRepository
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
@@ -16,21 +19,47 @@ class CourseControllerIntgTest {
     @Autowired
     lateinit var webTestClient : WebTestClient
 
+    @Autowired
+    lateinit var courseRepository: CourseRepository
+
+    @BeforeEach
+    fun setup(){
+        courseRepository.deleteAll()
+        val courseList = mutableListOf(Course(null,"Plants","Science"))
+        courseRepository.saveAll(courseList)
+    }
+
+    @Test
+    fun retrieveAll(){
+        val expectedCourseDTO = CourseDTO(1,"Plants","Science")
+
+        val courseDTOList = webTestClient
+            .get()
+            .uri("/v1/courses")
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList(CourseDTO::class.java)
+            .returnResult()
+            .responseBody
+
+        Assertions.assertEquals(mutableListOf(expectedCourseDTO),courseDTOList)
+    }
+
     @Test
     fun add(){
-        var requestJson = "{\n \"name\":\"Plants\",\n \"category\":\"Science\"\n}"
-        var expectedCourseDTO = CourseDTO(1,"Plants","Science")
+        val requestJson = "{\n \"name\":\"Numbers\",\n \"category\":\"Maths\"\n}"
 
-        var response = webTestClient
+        val response = webTestClient
             .post()
             .uri("/v1/courses")
             .bodyValue(requestJson)
             .header("Content-Type","application/json")
             .exchange()
-            .expectStatus().is2xxSuccessful
+            .expectStatus().isCreated
             .expectBody(CourseDTO::class.java)
             .returnResult()
 
-        Assertions.assertEquals(expectedCourseDTO,response.responseBody)
+        Assertions.assertNotNull(response.responseBody!!.id)
     }
+
 }
