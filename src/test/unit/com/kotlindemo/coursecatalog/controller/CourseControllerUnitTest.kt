@@ -75,7 +75,11 @@ class CourseControllerUnitTest {
             .header("Content-Type","application/json")
             .exchange()
             .expectStatus().isBadRequest
+            .expectBody(String::class.java)
+            .returnResult()
+            .responseBody
 
+        Assertions.assertEquals("courseDTO.category must not be blank, courseDTO.name must not be blank", response)
     }
 
     @Test
