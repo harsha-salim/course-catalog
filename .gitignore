@@ -41,3 +41,5 @@ gradlew
 gradlew.bat
 settings.gradle.kts
 .talismanrc
+.DS_Store
+.gitignore

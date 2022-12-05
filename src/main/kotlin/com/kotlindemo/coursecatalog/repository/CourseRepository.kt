@@ -4,4 +4,5 @@ import com.kotlindemo.coursecatalog.entity.Course
 import org.springframework.data.repository.CrudRepository
 
 interface CourseRepository : CrudRepository<Course,Int> {
+    fun findCoursesByNameContaining(courseName: String): List<Course>
 }
