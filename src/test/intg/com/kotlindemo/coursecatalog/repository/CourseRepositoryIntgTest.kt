@@ -32,4 +32,13 @@ class CourseRepositoryIntgTest {
 
         Assertions.assertEquals(2,courses.size)
     }
+
+    @Test
+    fun findCourseByCategoryContaining(){
+        val categoryName = "Science"
+
+        val courses: List<Course> = courseRepository.findCoursesByCategoryContaining(categoryName)
+
+        Assertions.assertEquals(2,courses.size)
+    }
 }
