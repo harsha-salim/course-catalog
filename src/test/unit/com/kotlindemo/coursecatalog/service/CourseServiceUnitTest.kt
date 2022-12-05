@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.util.*
 
 @ExtendWith(MockKExtension::class)
 class CourseServiceUnitTest {
@@ -58,5 +59,18 @@ class CourseServiceUnitTest {
         val actualCourseDTOList = courseService.retrieveAll()
 
         Assertions.assertTrue(actualCourseDTOList.containsAll(expectedCourseDTOList))
+    }
+
+    @Test
+    fun change(){
+        val courseId = 1
+        val changes = CourseDTO(1,"Plants & Animals","Science")
+
+        every { courseRepositoryMock.findById(any()) } returns Optional.of(Course(1,"Plants","Science"))
+        every { courseRepositoryMock.save(any()) } returns Course(1,"Plants & Animals","Science")
+
+        val resultCourseDTO = courseService.change(courseId,changes)
+
+        Assertions.assertEquals(changes,resultCourseDTO)
     }
 }

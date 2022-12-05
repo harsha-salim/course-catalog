@@ -62,4 +62,24 @@ class CourseControllerIntgTest {
         Assertions.assertNotNull(response.responseBody!!.id)
     }
 
+    @Test
+    fun change(){
+        val course = Course(null,"Plants Only","Science")
+        courseRepository.save(course)
+
+        val changes = CourseDTO(null,"Plants & Animals","Science")
+
+        var changedDTO = webTestClient
+            .put()
+            .uri("/v1/courses/{course-id}",course.id)
+            .bodyValue(changes)
+            .exchange()
+            .expectStatus().isOk
+            .expectBody(CourseDTO::class.java)
+            .returnResult()
+            .responseBody
+
+        Assertions.assertEquals(changes.name,changedDTO!!.name)
+    }
+
 }

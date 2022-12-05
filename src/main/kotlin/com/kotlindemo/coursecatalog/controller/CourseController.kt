@@ -13,10 +13,13 @@ class CourseController(val courseService: CourseService) {
     fun retrieveAll(): List<CourseDTO> {
         return courseService.retrieveAll()
     }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun add(@RequestBody courseDTO: CourseDTO): CourseDTO {
         return courseService.add(courseDTO);
+    }
+    @PutMapping("/{course-id}")
+    fun change(@PathVariable("course-id") courseId: Int,@RequestBody courseDTO: CourseDTO): CourseDTO {
+        return courseService.change(courseId, courseDTO)
     }
 }

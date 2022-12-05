@@ -59,4 +59,24 @@ class CourseControllerUnitTest {
         Assertions.assertEquals(expectedCourseDTO,response.responseBody)
     }
 
+    @Test
+    fun change(){
+        val courseId = 1
+        val changes = CourseDTO(1,"Plants & Animals","Science")
+
+        every { courseService.change(any(),any()) } returns changes
+
+        var changedDTO = webTestClient
+            .put()
+            .uri("/v1/courses/{course-id}",courseId)
+            .bodyValue(changes)
+            .exchange()
+            .expectStatus().is2xxSuccessful
+            .expectBody(CourseDTO::class.java)
+            .returnResult()
+            .responseBody
+
+        Assertions.assertEquals(changes,changedDTO)
+    }
+
 }
