@@ -62,6 +62,23 @@ class CourseControllerUnitTest {
     }
 
     @Test
+    fun shouldNotAllowCourseWithEmptyNameAndCategoryToBeAdded(){
+        val requestJson = "{\n \"name\":\"\",\n \"category\":\"\"\n}"
+        val expectedCourseDTO = CourseDTO(1,"Plants","Science")
+
+        every { courseService.add(any()) } returns expectedCourseDTO
+
+        val response = webTestClient
+            .post()
+            .uri("/v1/courses")
+            .bodyValue(requestJson)
+            .header("Content-Type","application/json")
+            .exchange()
+            .expectStatus().isBadRequest
+
+    }
+
+    @Test
     fun change(){
         val courseId = 1
         val changes = CourseDTO(courseId,"Plants & Animals","Science")
