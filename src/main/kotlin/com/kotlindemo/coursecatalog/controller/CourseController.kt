@@ -13,8 +13,8 @@ import javax.validation.Valid
 class CourseController(val courseService: CourseService) {
 
     @GetMapping
-    fun retrieveAll(): List<CourseDTO> {
-        return courseService.retrieveAll()
+    fun retrieve(@RequestParam("course-name", required = false) courseName: String?): List<CourseDTO> {
+        return courseService.retrieveAll(courseName)
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

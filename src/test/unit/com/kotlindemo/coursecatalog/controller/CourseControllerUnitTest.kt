@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.client.AutoConfigureWebClient
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.web.util.UriComponentsBuilder
 
 @WebMvcTest(controllers = [CourseController::class])
 @AutoConfigureWebClient
@@ -28,11 +29,34 @@ class CourseControllerUnitTest {
             CourseDTO(1,"Plants","Science"),
             CourseDTO(2,"Numbers","Maths"),
         )
-        every { courseService.retrieveAll() }.returnsMany(expectedCourseDTOList)
+        every { courseService.retrieveAll(any()) }.returnsMany(expectedCourseDTOList)
 
         val actualCourseDTOList = webTestClient
             .get()
             .uri("/v1/courses")
+            .exchange()
+            .expectStatus().is2xxSuccessful
+            .expectBodyList(CourseDTO::class.java)
+            .returnResult()
+            .responseBody
+
+        Assertions.assertEquals(expectedCourseDTOList,actualCourseDTOList)
+    }
+
+    @Test
+    fun retrieve(){
+        val courseName = "Plants"
+        val expectedCourseDTOList = listOf(CourseDTO(1,"Plants","Science"))
+        every { courseService.retrieveAll(any()) } returns expectedCourseDTOList
+
+        val uri = UriComponentsBuilder
+            .fromUriString("/v1/courses")
+            .queryParam("course-name",courseName)
+            .toUriString()
+
+        val actualCourseDTOList = webTestClient
+            .get()
+            .uri(uri)
             .exchange()
             .expectStatus().is2xxSuccessful
             .expectBodyList(CourseDTO::class.java)

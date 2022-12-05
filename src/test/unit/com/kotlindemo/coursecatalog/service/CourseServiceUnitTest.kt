@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentMatchers.any
 import java.util.*
 
 @ExtendWith(MockKExtension::class)
@@ -54,7 +55,7 @@ class CourseServiceUnitTest {
             CourseDTO(2,"Numbers","Maths"),
         )
 
-        val actualCourseDTOList = courseService.retrieveAll()
+        val actualCourseDTOList = courseService.retrieveAll(any())
 
         Assertions.assertTrue(actualCourseDTOList.containsAll(expectedCourseDTOList))
     }

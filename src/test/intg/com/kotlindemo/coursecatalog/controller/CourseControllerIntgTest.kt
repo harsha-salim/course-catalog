@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.web.util.UriComponentsBuilder
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -43,6 +44,27 @@ class CourseControllerIntgTest {
             .responseBody
 
         Assertions.assertEquals(mutableListOf(expectedCourseDTO),courseDTOList)
+    }
+
+    @Test
+    fun retrieve(){
+        val courseName = "Plants"
+
+        val uri = UriComponentsBuilder
+            .fromUriString("/v1/courses")
+            .queryParam("course-name",courseName)
+            .toUriString()
+
+        val courseDTOList = webTestClient
+            .get()
+            .uri(uri)
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList(CourseDTO::class.java)
+            .returnResult()
+            .responseBody
+
+        Assertions.assertTrue(courseDTOList?.size==1)
     }
 
     @Test
