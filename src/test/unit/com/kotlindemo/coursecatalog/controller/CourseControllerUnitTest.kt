@@ -4,6 +4,8 @@ import com.kotlindemo.coursecatalog.dto.CourseDTO
 import com.kotlindemo.coursecatalog.service.CourseService
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
+import io.mockk.just
+import io.mockk.runs
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,13 +24,13 @@ class CourseControllerUnitTest {
 
     @Test
     fun retrieveAll(){
-        var expectedCourseDTOList = mutableListOf<CourseDTO>(
+        val expectedCourseDTOList = mutableListOf(
             CourseDTO(1,"Plants","Science"),
             CourseDTO(2,"Numbers","Maths"),
         )
-        every { courseService.retrieveAll() } returns expectedCourseDTOList
+        every { courseService.retrieveAll() }.returnsMany(expectedCourseDTOList)
 
-        var actualCourseDTOList = webTestClient
+        val actualCourseDTOList = webTestClient
             .get()
             .uri("/v1/courses")
             .exchange()
@@ -41,12 +43,12 @@ class CourseControllerUnitTest {
     }
     @Test
     fun add(){
-        var requestJson = "{\n \"name\":\"Plants\",\n \"category\":\"Science\"\n}"
-        var expectedCourseDTO = CourseDTO(1,"Plants","Science")
+        val requestJson = "{\n \"name\":\"Plants\",\n \"category\":\"Science\"\n}"
+        val expectedCourseDTO = CourseDTO(1,"Plants","Science")
 
         every { courseService.add(any()) } returns expectedCourseDTO
 
-        var response = webTestClient
+        val response = webTestClient
             .post()
             .uri("/v1/courses")
             .bodyValue(requestJson)
@@ -62,11 +64,11 @@ class CourseControllerUnitTest {
     @Test
     fun change(){
         val courseId = 1
-        val changes = CourseDTO(1,"Plants & Animals","Science")
+        val changes = CourseDTO(courseId,"Plants & Animals","Science")
 
         every { courseService.change(any(),any()) } returns changes
 
-        var changedDTO = webTestClient
+        val changedDTO = webTestClient
             .put()
             .uri("/v1/courses/{course-id}",courseId)
             .bodyValue(changes)
@@ -77,6 +79,20 @@ class CourseControllerUnitTest {
             .responseBody
 
         Assertions.assertEquals(changes,changedDTO)
+    }
+
+    @Test
+    fun delete(){
+        val courseId = 1
+
+        every { courseService.delete(any()) } just runs
+
+        webTestClient
+            .delete()
+            .uri("/v1/courses/{course-id}",courseId)
+            .exchange()
+            .expectStatus().is2xxSuccessful
+
     }
 
 }

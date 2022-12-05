@@ -22,4 +22,9 @@ class CourseController(val courseService: CourseService) {
     fun change(@PathVariable("course-id") courseId: Int,@RequestBody courseDTO: CourseDTO): CourseDTO {
         return courseService.change(courseId, courseDTO)
     }
+    @DeleteMapping("/{course-id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun delete(@PathVariable("course-id") courseId: Int) {
+        courseService.delete(courseId)
+    }
 }

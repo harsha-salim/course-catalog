@@ -69,7 +69,7 @@ class CourseControllerIntgTest {
 
         val changes = CourseDTO(null,"Plants & Animals","Science")
 
-        var changedDTO = webTestClient
+        val changedDTO = webTestClient
             .put()
             .uri("/v1/courses/{course-id}",course.id)
             .bodyValue(changes)
@@ -82,4 +82,16 @@ class CourseControllerIntgTest {
         Assertions.assertEquals(changes.name,changedDTO!!.name)
     }
 
+    @Test
+    fun delete(){
+        val course = Course(null,"Plants","Science")
+        courseRepository.save(course)
+
+        webTestClient
+            .delete()
+            .uri("/v1/courses/{course-id}",course.id)
+            .exchange()
+            .expectStatus().isNoContent
+
+    }
 }
