@@ -83,6 +83,27 @@ class CourseControllerUnitTest {
     }
 
     @Test
+    fun shouldHandleRuntimeException(){
+        val requestJson = "{\n \"name\":\"Plants\",\n \"category\":\"Science\"\n}"
+        val message = "Something went wrong :/"
+
+        every { courseService.add(any()) } throws RuntimeException(message)
+
+        val response = webTestClient
+            .post()
+            .uri("/v1/courses")
+            .bodyValue(requestJson)
+            .header("Content-Type","application/json")
+            .exchange()
+            .expectStatus().is5xxServerError
+            .expectBody(String::class.java)
+            .returnResult()
+            .responseBody
+
+        Assertions.assertEquals(message, response)
+    }
+
+    @Test
     fun change(){
         val courseId = 1
         val changes = CourseDTO(courseId,"Plants & Animals","Science")
