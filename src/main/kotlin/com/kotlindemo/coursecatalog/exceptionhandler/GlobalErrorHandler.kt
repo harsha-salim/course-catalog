@@ -1,4 +1,4 @@
-package com.kotlindemo.coursecatalog.exception
+package com.kotlindemo.coursecatalog.exceptionhandler
 
 import mu.KLogging
 import org.springframework.http.HttpHeaders
