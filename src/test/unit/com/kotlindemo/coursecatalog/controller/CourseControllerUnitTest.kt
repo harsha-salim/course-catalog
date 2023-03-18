@@ -67,8 +67,9 @@ class CourseControllerUnitTest {
     }
     @Test
     fun add(){
-        val requestJson = "{\n \"name\":\"Plants\",\n \"category\":\"Science\"\n}"
-        val expectedCourseDTO = CourseDTO(1,"Plants","Science")
+        val requestJson = "{\n \"name\":\"Plants\",\n \"category\":\"Science\",\n" +
+                " \"instructorId\":1\n}"
+        val expectedCourseDTO = CourseDTO(1,"Plants","Science",1)
 
         every { courseService.add(any()) } returns expectedCourseDTO
 
@@ -87,8 +88,9 @@ class CourseControllerUnitTest {
 
     @Test
     fun shouldNotAllowCourseWithEmptyNameAndCategoryToBeAdded(){
-        val requestJson = "{\n \"name\":\"\",\n \"category\":\"\"\n}"
-        val expectedCourseDTO = CourseDTO(1,"Plants","Science")
+        val requestJson = "{\n \"name\":\"\",\n \"category\":\"\",\n" +
+                " \"instructorId\":1\n}"
+        val expectedCourseDTO = CourseDTO(1,"Plants","Science",1)
 
         every { courseService.add(any()) } returns expectedCourseDTO
 
@@ -108,7 +110,9 @@ class CourseControllerUnitTest {
 
     @Test
     fun shouldHandleRuntimeException(){
-        val requestJson = "{\n \"name\":\"Plants\",\n \"category\":\"Science\"\n}"
+        val requestJson = "{\n \"name\":\"Plants\",\n \"category\":\"Science\",\n" +
+                " \"instructorId\":1\n}"
+
         val message = "Something went wrong :/"
 
         every { courseService.add(any()) } throws RuntimeException(message)
@@ -130,7 +134,7 @@ class CourseControllerUnitTest {
     @Test
     fun change(){
         val courseId = 1
-        val changes = CourseDTO(courseId,"Plants & Animals","Science")
+        val changes = CourseDTO(courseId,"Plants & Animals","Science",1)
 
         every { courseService.change(any(),any()) } returns changes
 

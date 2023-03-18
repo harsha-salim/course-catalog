@@ -1,6 +1,7 @@
 package com.kotlindemo.coursecatalog.repository
 
 import com.kotlindemo.coursecatalog.entity.Course
+import com.kotlindemo.coursecatalog.entity.Instructor
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -18,12 +19,19 @@ class CourseRepositoryIntgTest {
     @Autowired
     lateinit var courseRepository: CourseRepository
 
+    @Autowired
+    lateinit var instructorRepository: InstructorRepository
+
     @BeforeEach
     fun setup(){
+        instructorRepository.deleteAll()
         courseRepository.deleteAll()
-        val course1 = Course(null,"Plants","Science")
-        val course2 = Course(null,"Plants & Animals","Science")
 
+        val instructor = Instructor(1,"John")
+        instructorRepository.save(instructor)
+
+        val course1 = Course(null,"Plants","Science", instructorRepository.findAll().first())
+        val course2 = Course(null,"Plants & Animals","Science", instructorRepository.findAll().first())
         courseRepository.save(course1)
         courseRepository.save(course2)
     }

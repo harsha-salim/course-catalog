@@ -3,22 +3,29 @@ package com.kotlindemo.coursecatalog.service
 import com.kotlindemo.coursecatalog.dto.CourseDTO
 import com.kotlindemo.coursecatalog.entity.Course
 import com.kotlindemo.coursecatalog.exception.CourseNotFoundException
+import com.kotlindemo.coursecatalog.exception.InstructorNotValidException
 import com.kotlindemo.coursecatalog.repository.CourseRepository
 import mu.KLogging
 import org.springframework.stereotype.Service
 
 @Service
-class CourseService(val courseRepository: CourseRepository) {
+class CourseService(val courseRepository: CourseRepository, val instructorService: InstructorService) {
     companion object: KLogging()
 
     fun add(courseDTO : CourseDTO): CourseDTO{
-        var courseEntity = courseDTO.let {
-            Course(null, it.name, it.category)
+        val instructorOptional = instructorService.findByInstructorId(courseDTO.instructorId!!)
+        if (!instructorOptional.isPresent){
+            throw InstructorNotValidException("Instructor not valid for id: ${courseDTO.instructorId}")
         }
+
+        val courseEntity = courseDTO.let {
+            Course(null, it.name, it.category, instructorOptional.get())
+        }
+
         courseRepository.save(courseEntity)
         logger.info("Saved course is : $courseEntity")
         return courseEntity.let {
-            CourseDTO(it.id, it.name, it.category)
+            CourseDTO(it.id, it.name, it.category, it.instructor!!.id)
         }
     }
 
@@ -29,13 +36,13 @@ class CourseService(val courseRepository: CourseRepository) {
             ?: courseRepository.findAll()
         return courses
             .map {
-                CourseDTO(it.id, it.name, it.category)
+                CourseDTO(it.id, it.name, it.category, it.instructor!!.id)
             }
             .toList()
     }
 
     fun change(courseId : Int, courseDTO: CourseDTO): CourseDTO {
-        var existingCourse = courseRepository.findById(courseId)
+        val existingCourse = courseRepository.findById(courseId)
         return if (existingCourse.isPresent){
             existingCourse
                 .get()
@@ -51,7 +58,7 @@ class CourseService(val courseRepository: CourseRepository) {
     }
 
     fun delete(courseId: Int){
-        var existingCourse = courseRepository.findById(courseId)
+        val existingCourse = courseRepository.findById(courseId)
         return if (existingCourse.isPresent){
             existingCourse
                 .get()

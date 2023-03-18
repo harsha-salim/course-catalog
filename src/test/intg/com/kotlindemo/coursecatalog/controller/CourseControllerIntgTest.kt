@@ -2,7 +2,9 @@ package com.kotlindemo.coursecatalog.controller
 
 import com.kotlindemo.coursecatalog.dto.CourseDTO
 import com.kotlindemo.coursecatalog.entity.Course
+import com.kotlindemo.coursecatalog.entity.Instructor
 import com.kotlindemo.coursecatalog.repository.CourseRepository
+import com.kotlindemo.coursecatalog.repository.InstructorRepository
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -23,27 +25,18 @@ class CourseControllerIntgTest {
     @Autowired
     lateinit var courseRepository: CourseRepository
 
+    @Autowired
+    lateinit var instructorRepository: InstructorRepository
+
     @BeforeEach
     fun setup(){
+        instructorRepository.deleteAll()
+        val instructor = Instructor(null,"John")
+        instructorRepository.save(instructor)
+
         courseRepository.deleteAll()
-        val courseList = mutableListOf(Course(null,"Plants","Science"))
+        val courseList = mutableListOf(Course(null,"Plants","Science", instructor))
         courseRepository.saveAll(courseList)
-    }
-
-    @Test
-    fun retrieveAll(){
-        val expectedCourseDTO = CourseDTO(1,"Plants","Science")
-
-        val courseDTOList = webTestClient
-            .get()
-            .uri("/v1/courses")
-            .exchange()
-            .expectStatus().isOk
-            .expectBodyList(CourseDTO::class.java)
-            .returnResult()
-            .responseBody
-
-        Assertions.assertEquals(mutableListOf(expectedCourseDTO),courseDTOList)
     }
 
     @Test
@@ -68,8 +61,25 @@ class CourseControllerIntgTest {
     }
 
     @Test
+    fun retrieveAll(){
+        val expectedCourseDTO = CourseDTO(2,"Plants","Science",instructorRepository.findAll().first().id)
+
+        val courseDTOList = webTestClient
+            .get()
+            .uri("/v1/courses")
+            .exchange()
+            .expectStatus().isOk
+            .expectBodyList(CourseDTO::class.java)
+            .returnResult()
+            .responseBody
+
+        Assertions.assertEquals(mutableListOf(expectedCourseDTO),courseDTOList)
+    }
+
+    @Test
     fun add(){
-        val requestJson = "{\n \"name\":\"Numbers\",\n \"category\":\"Maths\"\n}"
+        val requestJson = "{\n \"name\":\"Numbers\",\n \"category\":\"Maths\",\n" +
+                " \"instructorId\":${instructorRepository.findAll().first().id}\n}"
 
         val response = webTestClient
             .post()
@@ -86,10 +96,10 @@ class CourseControllerIntgTest {
 
     @Test
     fun change(){
-        val course = Course(null,"Plants Only","Science")
+        val course = Course(null,"Plants Only","Science",instructorRepository.findAll().first())
         courseRepository.save(course)
 
-        val changes = CourseDTO(null,"Plants & Animals","Science")
+        val changes = CourseDTO(null,"Plants & Animals","Science",instructorRepository.findAll().first().id)
 
         val changedDTO = webTestClient
             .put()
@@ -106,7 +116,7 @@ class CourseControllerIntgTest {
 
     @Test
     fun delete(){
-        val course = Course(null,"Plants","Science")
+        val course = Course(null,"Plants","Science",instructorRepository.findAll().first())
         courseRepository.save(course)
 
         webTestClient
