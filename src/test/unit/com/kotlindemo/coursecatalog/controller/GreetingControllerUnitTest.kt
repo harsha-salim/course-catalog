@@ -21,11 +21,11 @@ class GreetingControllerUnitTest {
 
     @Test
     fun retrieveGreeting(){
-        var name = "Harsha"
+        val name = "Harsha"
 
         every { greetingServiceMock.retrieveGreeting(any()) } returns "Hello, $name, and Hello from default profile"
 
-        var result = webTestClient
+        val result = webTestClient
             .get()
             .uri("/v1/greetings/{name}",name)
             .exchange()

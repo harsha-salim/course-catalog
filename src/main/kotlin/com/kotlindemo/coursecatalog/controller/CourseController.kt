@@ -19,7 +19,7 @@ class CourseController(val courseService: CourseService) {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     fun add(@RequestBody @Valid courseDTO: CourseDTO): CourseDTO {
-        return courseService.add(courseDTO);
+        return courseService.add(courseDTO)
     }
     @PutMapping("/{course-id}")
     fun change(@PathVariable("course-id") courseId: Int,@RequestBody @Valid courseDTO: CourseDTO): CourseDTO {
