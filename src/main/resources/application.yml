@@ -27,6 +27,13 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-5mhvvrxyp13mmhvq.us.auth0.com/
+auth0:
+  audience: http://coursecatalog.demo
 #  h2:
 #    console:
 #      enabled: true

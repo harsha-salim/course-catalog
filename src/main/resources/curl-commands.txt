@@ -12,29 +12,31 @@ curl -i \
 -d '{"id":null, "name":"Build Restful APIs using Kotlin and SpringBoot", "category": "Development"}' \
 -H "Content-Type: application/json" \
 -X POST http://localhost:8080/v1/courses
-
+-H "authorization: Bearer {auth token}"
 
 curl -i \
 -d '{"id":null, "name":"Build Reactive Microservices using Spring WebFlux/SpringBoot ", "category": "Development"}' \
 -H "Content-Type: application/json" \
 -X POST http://localhost:8080/v1/courses
+-H "authorization: Bearer {auth token}"
 
 GET COURSES:
 ==============
-curl -i http://localhost:8080/v1/courses
+curl -i http://localhost:8080/v1/courses \
+-H "authorization: Bearer {auth token}"
 
 UPDATE COURSE:
 ==============
 curl -i \
--d '{"id":null, "name":"Build Restful APIs using Kotlin & SpringBoot2", "category": "Development"}' \
+-d '{"id":null, "name":"Build Restful APIs using Kotlin & SpringBoot2", "category": "Development", "instructorId": 1}' \
 -H "Content-Type: application/json" \
--X PUT http://localhost:8080/v1/courses/1
-
+-X PUT http://localhost:8080/v1/courses/2 \
+-H "authorization: Bearer {auth token}"
 
 DELETE COURSE:
 ==============
-curl -i -X DELETE http://localhost:8080/v1/courses/1
-
+curl -i -X DELETE http://localhost:8080/v1/courses/2 \
+-H "authorization: Bearer {auth token}"
 
 =======================
 Instructor Controller: |
@@ -43,13 +45,14 @@ CREATE INSTRUCTOR:
 ==================
 curl -i \
 -d '{"id":null, "name":"Dilip Sundarraj"}' \
+-X POST http://localhost:8080/v1/instructors \
 -H "Content-Type: application/json" \
--X POST http://localhost:8080/v1/instructors
-
+-H "authorization: Bearer {auth token}"
 
 CREATE COURSE WITH INSTRUCTOR:
 ==================
 curl -i \
 -d '{"id":null, "name":"Build Restful APIs using Kotlin and SpringBoot", "category": "Development", "instructorId": 1}' \
 -H "Content-Type: application/json" \
--X POST http://localhost:8080/v1/courses
+-X POST http://localhost:8080/v1/courses \
+-H "authorization: Bearer {auth token}"
