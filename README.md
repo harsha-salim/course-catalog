@@ -16,3 +16,21 @@ A course catalog API created using Kotlin, Spring Boot and PostgresDB.
     export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock
     export DOCKER_HOST="unix://${HOME}/.colima/docker.sock"
   ```
+9. To run the application:
+   1. Start colima
+   2. Start docker-compose
+   3. Run ./gradlew bootRun
+   4. Get the Auth0 access token by running the following:
+   ```
+   curl --request POST \
+   --url https://dev-5mhvvrxyp13mmhvq.us.auth0.com/oauth/token \
+   --header 'content-type: application/json' \
+   --data 
+    '{
+      "client_id":"sZV0he2De2bRFndaJu3bznAsiaKy8GsS",
+      "client_secret":"A3NbjkoqOWF6Ogc6jULvV3gF_pQqD9_pZd6eXA9NdYx5MR1FYuogImCXvRGvOOdA",
+      "audience":"http://coursecatalog.demo",
+      "grant_type":"client_credentials"
+    }'
+   ```
+   5. Use the access token in the header of the requests sent.
