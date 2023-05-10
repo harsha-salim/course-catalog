@@ -1,8 +1,8 @@
 package com.kotlindemo.coursecatalog.controller
 
-import com.kotlindemo.coursecatalog.dto.CourseDTO
 import com.kotlindemo.coursecatalog.entity.Course
 import com.kotlindemo.coursecatalog.entity.Instructor
+import com.kotlindemo.coursecatalog.generated.api.dto.CourseDto
 import com.kotlindemo.coursecatalog.repository.CourseRepository
 import com.kotlindemo.coursecatalog.repository.InstructorRepository
 import org.junit.jupiter.api.Assertions
@@ -25,7 +25,7 @@ import org.testcontainers.utility.DockerImageName
 @ActiveProfiles("test")
 @AutoConfigureWebTestClient
 @Testcontainers
-class CourseControllerIntgTest {
+class CourseDelegateImplIntgTest {
     @Autowired
     lateinit var webTestClient : WebTestClient
 
@@ -77,7 +77,7 @@ class CourseControllerIntgTest {
             .uri(uri)
             .exchange()
             .expectStatus().isOk
-            .expectBodyList(CourseDTO::class.java)
+            .expectBodyList(CourseDto::class.java)
             .returnResult()
             .responseBody
 
@@ -86,14 +86,14 @@ class CourseControllerIntgTest {
 
     @Test
     fun retrieveAll(){
-        val expectedCourseDTO = CourseDTO(2,"Plants","Science",instructorRepository.findAll().first().id)
+        val expectedCourseDTO = CourseDto(id = 2, name = "Plants", category = "Science", instructorId = instructorRepository.findAll().first().id!!)
 
         val courseDTOList = webTestClient
             .get()
             .uri("/v1/courses")
             .exchange()
             .expectStatus().isOk
-            .expectBodyList(CourseDTO::class.java)
+            .expectBodyList(CourseDto::class.java)
             .returnResult()
             .responseBody
 
@@ -112,7 +112,7 @@ class CourseControllerIntgTest {
             .header("Content-Type","application/json")
             .exchange()
             .expectStatus().isCreated
-            .expectBody(CourseDTO::class.java)
+            .expectBody(CourseDto::class.java)
             .returnResult()
 
         Assertions.assertNotNull(response.responseBody!!.id)
@@ -123,7 +123,7 @@ class CourseControllerIntgTest {
         val course = Course(null,"Plants Only","Science",instructorRepository.findAll().first())
         courseRepository.save(course)
 
-        val changes = CourseDTO(null,"Plants & Animals","Science",instructorRepository.findAll().first().id)
+        val changes = CourseDto(id = null, name = "Plants & Animals", category = "Science", instructorId = instructorRepository.findAll().first().id!!)
 
         val changedDTO = webTestClient
             .put()
@@ -131,7 +131,7 @@ class CourseControllerIntgTest {
             .bodyValue(changes)
             .exchange()
             .expectStatus().isOk
-            .expectBody(CourseDTO::class.java)
+            .expectBody(CourseDto::class.java)
             .returnResult()
             .responseBody
 

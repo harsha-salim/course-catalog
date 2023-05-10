@@ -1,0 +1,222 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: REST Endpoints for Course Catalog
+servers:
+  - url: http://localhost:8082/v1
+paths:
+  /courses:
+    get:
+      summary: Fetch a course
+      operationId: retrieve
+      tags:
+        - course
+      parameters:
+        - in: query
+          name: course-name
+          required: false
+          schema:
+            type: string
+          description: The course-name of course whose details is to be fetched
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CourseDto'
+        '400':
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errors:
+                  - field: '' #TODO
+                    message: ''#TODO
+        '500':
+          description: INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errors:
+                  - message: 'Internal Server Error'
+        default:
+          description: An unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Add a course
+      operationId: add
+      tags:
+        - course
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseDto'
+        required: true
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseDto'
+        '400':
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errors:
+                  - field: '' #TODO
+                    message: ''#TODO
+        '500':
+          description: INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errors:
+                  - message: 'Internal Server Error'
+        default:
+          description: An unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /courses/{course-id}:
+    put:
+      summary: Edit a course
+      operationId: change
+      tags:
+        - course
+      parameters:
+        - in: path
+          name: course-id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: Course-id of course
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CourseDto'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseDto'
+        '400':
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errors:
+                  - field: '' #TODO
+                    message: ''#TODO
+        '500':
+          description: INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errors:
+                  - message: 'Internal Server Error'
+        default:
+          description: An unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete a course
+      operationId: delete
+      tags:
+        - course
+      parameters:
+        - in: path
+          name: course-id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '204':
+          description: DELETED
+        '400':
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errors:
+                  - field: '' #TODO
+                    message: ''#TODO
+        '500':
+          description: INTERNAL SERVER ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errors:
+                  - message: 'Internal Server Error'
+components:
+  schemas:
+    CourseDto:
+      type: object
+      required:
+        - name
+        - category
+        - instructorId
+      properties:
+        id:
+          type: integer
+          description: Course id
+        name:
+          type: string
+          description: Course name
+        category:
+          type: string
+          description: Course category
+        instructorId:
+          type: integer
+          description: Course instructor id
+    Error:
+      type: object
+      properties:
+        field:
+          type: string
+          description: Field
+        message:
+          type: string
+          description: Error message
+    ErrorResponse:
+      type: object
+      required:
+        - errors
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'

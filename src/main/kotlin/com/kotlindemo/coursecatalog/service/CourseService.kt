@@ -1,9 +1,9 @@
 package com.kotlindemo.coursecatalog.service
 
-import com.kotlindemo.coursecatalog.dto.CourseDTO
 import com.kotlindemo.coursecatalog.entity.Course
 import com.kotlindemo.coursecatalog.exception.CourseNotFoundException
 import com.kotlindemo.coursecatalog.exception.InstructorNotValidException
+import com.kotlindemo.coursecatalog.generated.api.dto.CourseDto
 import com.kotlindemo.coursecatalog.repository.CourseRepository
 import mu.KLogging
 import org.springframework.stereotype.Service
@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service
 class CourseService(val courseRepository: CourseRepository, val instructorService: InstructorService) {
     companion object: KLogging()
 
-    fun add(courseDTO : CourseDTO): CourseDTO{
-        val instructorOptional = instructorService.findByInstructorId(courseDTO.instructorId!!)
+    fun add(courseDTO : CourseDto): CourseDto{
+        val instructorOptional = instructorService.findByInstructorId(courseDTO.instructorId)
         if (!instructorOptional.isPresent){
             throw InstructorNotValidException("Instructor not valid for id: ${courseDTO.instructorId}")
         }
@@ -25,23 +25,23 @@ class CourseService(val courseRepository: CourseRepository, val instructorServic
         courseRepository.save(courseEntity)
         logger.info("Saved course is : $courseEntity")
         return courseEntity.let {
-            CourseDTO(it.id, it.name, it.category, it.instructor!!.id)
+            CourseDto(id=it.id, name=it.name, category = it.category, instructorId = it.instructor!!.id!!)
         }
     }
 
-    fun retrieveAll(courseName: String?) : List<CourseDTO> {
+    fun retrieveAll(courseName: String?) : List<CourseDto> {
         val courses = courseName?.let {
             courseRepository.findCoursesByNameContaining(courseName)
         }
             ?: courseRepository.findAll()
         return courses
             .map {
-                CourseDTO(it.id, it.name, it.category, it.instructor!!.id)
+                CourseDto(id=it.id, name = it.name, category = it.category, instructorId = it.instructor!!.id!!)
             }
             .toList()
     }
 
-    fun change(courseId : Int, courseDTO: CourseDTO): CourseDTO {
+    fun change(courseId : Int, courseDTO: CourseDto): CourseDto {
         val existingCourse = courseRepository.findById(courseId)
         return if (existingCourse.isPresent){
             existingCourse
@@ -50,7 +50,7 @@ class CourseService(val courseRepository: CourseRepository, val instructorServic
                     it.name = courseDTO.name
                     it.category = courseDTO.category
                     courseRepository.save(it)
-                    CourseDTO(it.id, it.name, it.category)
+                    CourseDto(id = it.id, name = it.name, category = it.category, instructorId = courseDTO.instructorId)
                 }
         } else {
             throw CourseNotFoundException("Course with course-id : $courseId is not found")

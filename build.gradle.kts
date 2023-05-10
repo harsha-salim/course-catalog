@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
 	id("org.springframework.boot") version "2.7.6"
 	id("io.spring.dependency-management") version "1.0.15.RELEASE"
+	id("org.openapi.generator") version "5.4.0"
 	kotlin("jvm") version "1.6.21"
 	kotlin("plugin.spring") version "1.6.21"
 	kotlin("plugin.jpa") version "1.6.21"
@@ -32,7 +33,11 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
-//	runtimeOnly("com.h2database:h2")
+	//openapi
+	runtimeOnly("org.springdoc:springdoc-openapi-kotlin:1.6.7")
+	implementation("org.springdoc:springdoc-openapi-ui:1.6.7")
+
+	//	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.postgresql:postgresql")
 	implementation("com.ninja-squad:springmockk:3.1.2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -59,7 +64,26 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
+tasks.withType<KotlinCompile> {
+	dependsOn("openApiGenerate")
+}
+
+openApiGenerate {
+	generatorName.set("kotlin-spring")
+	inputSpec.set("$rootDir/src/main/resources/course-catalog-spec.yml")
+	outputDir.set("$buildDir/generated/")
+	apiPackage.set("com.kotlindemo.coursecatalog.generated.controller")
+	modelPackage.set("com.kotlindemo.coursecatalog.generated.api.dto")
+	configFile.set("$rootDir/src/main/resources/api-config.json")
+	validateSpec.set(false)
+}
+
 sourceSets {
+	main {
+		java {
+			setSrcDirs(listOf("build/generated/src"))
+		}
+	}
 	test {
 		java {
 			setSrcDirs(listOf("src/test/intg","src/test/unit"))
